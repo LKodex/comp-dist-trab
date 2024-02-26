@@ -32,8 +32,8 @@ class Client():
         BALANCE_INDEX = 2
         status = "SUCCESS" if response[STATUS_INDEX] == "OK" else "FAIL"
         transaction_type = "Credit" if operation_type == self.OperationType.CREDIT.value else "Debit"
-        text = f"{transaction_type} transaction commited" if response == "OK" else f"{transaction_type} transaction failed"
-        message = f"[OUT] {status} -> {text}. New balance for account {response[ACCOUNT_INDEX]}: ${response[BALANCE_INDEX]:.2f}"
+        text = f"{transaction_type} transaction commited" if response[STATUS_INDEX] == "OK" else f"{transaction_type} transaction failed"
+        message = f"[OUT] {status} -> {text}. New balance for account {response[ACCOUNT_INDEX]}: ${int(response[BALANCE_INDEX]) / 100:.2f}"
         return message
 
 class MessageQueue():
@@ -99,9 +99,9 @@ if __name__ == "__main__":
         if command == "C" or command == "D":
             print("Fill the following fields:")
             account = input("Account ID: ")
-            account_balance = intInput("Account balance: ")
+            account_balance = intInput("Account balance (cents): ")
             operation_name = "Credit" if command == "C" else "Debit"
-            operation_value = intInput(f"{operation_name} value: ")
+            operation_value = intInput(f"{operation_name} value (cents): ")
             
             if command == "C":
                 client.credit(account, account_balance, operation_value)
