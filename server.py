@@ -50,6 +50,7 @@ if __name__ == "__main__":
     args_length = len(sys.argv)
     if args_length != 2:
         print(f"Usage: {sys.argv[0]} <port>")
+        sys.exit(11)
     server_port = int(sys.argv[1])
     transaction_coordinator = TransactionCoordinator(server_port)
     transaction_coordinator.start()
