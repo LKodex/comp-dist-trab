@@ -10,10 +10,10 @@ class DebitShard():
         return balance - value
 
 class TransactionCoordinator():
-    def __init__(self, port=8080, buffer_size=4096):
+    def __init__(self, address=("localhost", 8080), buffer_size=4096):
         self.buffer_size = buffer_size
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.socket.bind(("localhost", port))
+        self.socket.bind(address)
 
     def start(self):
         print(f"Transaction coordinator listening on {self.socket.getsockname()[0]}:{self.socket.getsockname()[1]}")
@@ -24,7 +24,6 @@ class TransactionCoordinator():
         while True:
             data, address = self.recv_message()
             request = data.split(",")
-            shard = None
             account_id = request[ACCOUNT_INDEX]
             balance = int(request[BALANCE_INDEX])
             operation_value = int(request[VALUE_INDEX])
@@ -49,8 +48,9 @@ class TransactionCoordinator():
 if __name__ == "__main__":
     args_length = len(sys.argv)
     if args_length != 2:
-        print(f"Usage: {sys.argv[0]} <port>")
+        print(f"Usage: {sys.argv[0]} <host:port>")
         sys.exit(11)
-    server_port = int(sys.argv[1])
-    transaction_coordinator = TransactionCoordinator(server_port)
+    server_address_arg = sys.argv[1].split(":")
+    server_address = (server_address_arg[0], int(server_address_arg[1]))
+    transaction_coordinator = TransactionCoordinator(server_address)
     transaction_coordinator.start()
