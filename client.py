@@ -94,7 +94,7 @@ if __name__ == "__main__":
         print("Choose one of the following commands:")
         for (command_char, command_name) in command_list:
             print(f"\t{command_char} - {command_name}")
-        command = input().upper().strip()
+        command = input(">>> ").upper().strip()
 
         if command == "C" or command == "D":
             print("Fill the following fields:")
