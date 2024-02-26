@@ -1,6 +1,7 @@
 import enum
 import socket
 import sys
+import time
 
 class Client():
     class OperationType(enum.StrEnum):
@@ -23,7 +24,8 @@ class Client():
         print(message)
 
     def request_operation(self, account, account_balance, operation_value, operation_type):
-        message = self.message_queue.send(account, account_balance, operation_value, operation_type)
+        date = int(time.time())
+        message = self.message_queue.send(account, account_balance, operation_value, operation_type, date)
         return message.split(",")
     
     def build_user_response_message(self, response, operation_type):
@@ -33,7 +35,9 @@ class Client():
         status = "SUCCESS" if response[STATUS_INDEX] == "OK" else "FAIL"
         transaction_type = "Credit" if operation_type == self.OperationType.CREDIT.value else "Debit"
         text = f"{transaction_type} transaction commited" if response[STATUS_INDEX] == "OK" else f"{transaction_type} transaction failed"
-        message = f"[OUT] {status} -> {text}. New balance for account {response[ACCOUNT_INDEX]}: ${int(response[BALANCE_INDEX]) / 100:.2f}"
+        message = f"[OUT] {status} -> {text}."
+        if response[STATUS_INDEX] == "OK":
+            message += f" New balance for account {response[ACCOUNT_INDEX]}: ${int(response[BALANCE_INDEX]) / 100:.2f}"
         return message
 
 class MessageQueue():
