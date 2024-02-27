@@ -24,7 +24,7 @@ class TransactionCoordinator():
         while True:
             data, address = self.recv_message()
             print(f"[LOG] Got from {address[0]}:{address[1]} message: {data}")
-            request = data.decode().split(",")
+            request = data.split(",")
             account_id = request[ACCOUNT_INDEX]
             balance = int(request[BALANCE_INDEX])
             operation_value = int(request[VALUE_INDEX])
