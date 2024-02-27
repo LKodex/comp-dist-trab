@@ -18,13 +18,13 @@ class Client():
         credit_operation = self.OperationType.CREDIT.value
         response = self.request_operation(account, account_balance, operation_value, credit_operation)
         message = self.build_user_response_message(response, credit_operation)
-        print(message)
+        print(f"\033[32m{message}")
     
     def debit(self, account, account_balance, operation_value):
         debit_operation = self.OperationType.DEBIT.value
         response = self.request_operation(account, account_balance, operation_value, debit_operation)
         message = self.build_user_response_message(response, debit_operation)
-        print(message)
+        print(f"\033[32m{message}")
 
     def request_operation(self, account, account_balance, operation_value, operation_type):
         date = int(time.time())
@@ -72,14 +72,14 @@ class MessageQueue():
         while tries <= self.retries:
             try:
                 if tries > 0:
-                    print(f"[Thread-{self.n}][LOG] Retrying... ({tries})")
+                    print(f"\033[33m[Thread-{self.n}][LOG] Retrying... ({tries})")
                 message, (host, port) = self.recv_response()
-                print(f"[Thread-{self.n}][LOG] {host}:{port} sent: {message}")
+                print(f"\033[32m[Thread-{self.n}][LOG] {host}:{port} sent: {message}")
                 return message
             except TimeoutError:
                 tries += 1
-                print(f"[Thread-{self.n}][WRN] Didn't received the \"OK\" confirmation message")
-        print(f"[Thread-{self.n}][ERR] Operation failed. Didn't received the \"OK\" confirmation message after ({tries}) tries")
+                print(f"\033[33m[Thread-{self.n}][WRN] Didn't received the \"OK\" confirmation message")
+        print(f"\033[31m[Thread-{self.n}][ERR] Operation failed. Didn't received the \"OK\" confirmation message after ({tries}) tries")
         return "ERR"
 
 def intInput(prompt):
@@ -101,7 +101,7 @@ def main():
     mq_server_host, mq_server_port = sys.argv[1].split(":")
     
     threads = []
-    for i in range(15):
+    for i in range(100):
         threads.append(
             threading.Thread(
                 target=thread_fn,
