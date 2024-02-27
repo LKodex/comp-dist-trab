@@ -23,8 +23,7 @@ class TransactionCoordinator():
         KIND_INDEX = 3
         while True:
             data, address = self.recv_message()
-            message = data.decode()
-            print(f"[LOG] Got from {address[0]}:{address[1]} message: {message}")
+            print(f"[LOG] Got from {address[0]}:{address[1]} message: {data}")
             request = data.decode().split(",")
             account_id = request[ACCOUNT_INDEX]
             balance = int(request[BALANCE_INDEX])
