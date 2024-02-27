@@ -23,7 +23,7 @@ class TransactionCoordinator():
         KIND_INDEX = 3
         while True:
             data, address = self.recv_message()
-            print(f"[LOG] Got from {address[0]}:{address[1]} message: {data}")
+            print(f"\033[32m[LOG] Got from {address[0]}:{address[1]} message: {data}")
             request = data.split(",")
             account_id = request[ACCOUNT_INDEX]
             balance = int(request[BALANCE_INDEX])
@@ -32,12 +32,15 @@ class TransactionCoordinator():
             if operation_kind == "C":
                 result = CreditShard.execute(balance, operation_value)
                 response = self.build_message("OK", account_id, result)
+                print(f"\033[32m[LOG] Credit operation commited")
             elif operation_kind == "D":
                 result = DebitShard.execute(balance, operation_value)
                 response = self.build_message("OK", account_id, result)
+                print(f"\033[32m[LOG] Debit operation commited")
             else:
                 response = self.build_message("ERR", f"Operation {operation_kind} doesn't exist")
-            print(f"[LOG] Sending response to {address[0]}:{address[1]}: {response}")
+                print(f"\033[33m[WRN] Client operation failed.")
+            print(f"\033[32m[LOG] Sending response to {address[0]}:{address[1]}: {response}")
             self.socket.sendto(response.encode(), address)
     
     def build_message(self, *args):
