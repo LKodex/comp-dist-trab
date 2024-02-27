@@ -23,7 +23,9 @@ class TransactionCoordinator():
         KIND_INDEX = 3
         while True:
             data, address = self.recv_message()
-            request = data.split(",")
+            message = data.decode()
+            print(f"[LOG] Got from {address[0]}:{address[1]} message: {message}")
+            request = data.decode().split(",")
             account_id = request[ACCOUNT_INDEX]
             balance = int(request[BALANCE_INDEX])
             operation_value = int(request[VALUE_INDEX])
@@ -36,6 +38,7 @@ class TransactionCoordinator():
                 response = self.build_message("OK", account_id, result)
             else:
                 response = self.build_message("ERR", f"Operation {operation_kind} doesn't exist")
+            print(f"[LOG] Sending response to {address[0]}:{address[1]}: {response}")
             self.socket.sendto(response.encode(), address)
     
     def build_message(self, *args):
