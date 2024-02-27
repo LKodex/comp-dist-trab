@@ -93,24 +93,21 @@ def thread_fn(mq_server_host, mq_server_port, account, balance, value, n):
     client = Client((mq_server_host, int(mq_server_port)), n)
     client.debit(account, balance, value)
 
-def main():
-    args_length = len(sys.argv)
-    if args_length != 2:
-        print(f"Usage: {sys.argv[0]} <mq_server host:port>")
-        sys.exit(11)
-    mq_server_host, mq_server_port = sys.argv[1].split(":")
-    
+def main(mq_server_host, mq_server_port, threads_quantity = 10):
     threads = []
-    for i in range(100):
+    for i in range(threads_quantity):
         threads.append(
             threading.Thread(
                 target=thread_fn,
-                args=(mq_server_host,
-                mq_server_port, f"Account{i}",
-                random.randint(100000, 1000000),
-                random.randint(2500,100000),
-                i,
-                )))
+                args=(
+                    mq_server_host,
+                    mq_server_port, f"Account{i}",
+                    random.randint(100000, 1000000),
+                    random.randint(2500, 100000),
+                    i,
+                )
+            )
+        )
     
     print("Starting threads...")
     for t in threads:
@@ -121,29 +118,33 @@ def main():
     print("Threads finished!")
 
 if __name__ == "__main__":
-    main()
-    # args_length = len(sys.argv)
-    # if args_length != 2:
-        # print(f"Usage: {sys.argv[0]} <mq_server host:port>")
-        # sys.exit(11)
-    # mq_server_host, mq_server_port = sys.argv[1].split(":")
-    # client = Client((mq_server_host, int(mq_server_port)))
-    # command = "R" # R = Running
-    # command_list = (("C", "Credit"), ("D", "Debit"), ("Q", "Quit"))
-    # while command != "Q": # Q = Quit
-        # print("Choose one of the following commands:")
-        # for (command_char, command_name) in command_list:
-            # print(f"\t{command_char} - {command_name}")
-        # command = input(">>> ").upper().strip()
-# 
-        # if command == "C" or command == "D":
-            # print("Fill the following fields:")
-            # account = input("Account ID: ")
-            # account_balance = intInput("Account balance (cents): ")
-            # operation_name = "Credit" if command == "C" else "Debit"
-            # operation_value = intInput(f"{operation_name} value (cents): ")
-            # 
-            # if command == "C":
-                # client.credit(account, account_balance, operation_value)
-            # elif command == "D":
-                # client.debit(account, account_balance, operation_value)
+    args_length = len(sys.argv)
+    is_args_length_valid = args_length == 2 or args_length == 3
+    if not is_args_length_valid:
+        print(f"Usage: {sys.argv[0]} <mq_server host:port> [threads quantity]")
+        sys.exit(11)
+    mq_server_host, mq_server_port = sys.argv[1].split(":")
+    if args_length == 3:
+        threads_quantity = int(sys.argv[2])
+        main(mq_server_host, mq_server_port, threads_quantity)
+    else:
+        client = Client((mq_server_host, int(mq_server_port)), 1)
+        command = "R" # R = Running
+        command_list = (("C", "Credit"), ("D", "Debit"), ("Q", "Quit"))
+        while command != "Q": # Q = Quit
+            print("Choose one of the following commands:")
+            for (command_char, command_name) in command_list:
+                print(f"\t{command_char} - {command_name}")
+            command = input(">>> ").upper().strip()
+
+            if command == "C" or command == "D":
+                print("Fill the following fields:")
+                account = input("Account ID: ")
+                account_balance = intInput("Account balance (cents): ")
+                operation_name = "Credit" if command == "C" else "Debit"
+                operation_value = intInput(f"{operation_name} value (cents): ")
+                
+                if command == "C":
+                    client.credit(account, account_balance, operation_value)
+                elif command == "D":
+                    client.debit(account, account_balance, operation_value)
